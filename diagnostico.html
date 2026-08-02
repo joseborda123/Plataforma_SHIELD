@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Inteligente — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .scan-zone{ position:relative; padding:50px; text-align:center; overflow:hidden; }
+  .scan-ring-wrap{ position:relative; width:220px; height:220px; margin:0 auto 24px; }
+  .scan-ring-wrap .pulse{
+    position:absolute; inset:0; border-radius:50%; border:2px solid var(--secondary); opacity:0;
+  }
+  .scan-zone.scanning .pulse{ animation: pulse-out 1.8s ease-out infinite; }
+  .scan-zone.scanning .pulse:nth-child(2){ animation-delay:.6s; }
+  .scan-zone.scanning .pulse:nth-child(3){ animation-delay:1.2s; }
+  @keyframes pulse-out{ 0%{ transform:scale(.7); opacity:.6; } 100%{ transform:scale(1.3); opacity:0; } }
+  .scan-icon{ width:220px; height:220px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--card-glass); border:1px solid var(--border); font-size:56px; color:var(--secondary); position:relative; z-index:2; }
+  .scan-zone.scanning .scan-icon i{ animation: spin-slow 2.2s linear infinite; }
+  @keyframes spin-slow{ to{ transform:rotate(360deg); } }
+  .scan-zone.done .scan-icon{ color:var(--success); border-color:rgba(16,185,129,.4); }
+  .scan-status{ font-family:var(--font-display); font-size:18px; margin-bottom:6px; }
+  .scan-log{ max-width:420px; margin:20px auto 0; text-align:left; }
+  .scan-log-item{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-faint); padding:6px 0; opacity:0; transform:translateY(6px); transition:.3s var(--ease); }
+  .scan-log-item.show{ opacity:1; transform:none; color:var(--text-dim); }
+  .scan-log-item i{ width:16px; color:var(--text-faint); }
+  .scan-log-item.show i{ color:var(--success); }
+
+  .result-hidden{ display:none; }
+  .metric-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-soft); }
+  .metric-row:last-child{ border-bottom:none; }
+</style>
+</head>
+<body data-page="diagnostico">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div>
+          <h1>Diagnóstico Inteligente</h1>
+          <p class="subtitle">Analiza tu dispositivo en busca de configuraciones inseguras, permisos riesgosos y apps sospechosas.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-main">
+        <div class="flex flex-col gap-20">
+
+          <div class="card scan-zone" id="scanZone">
+            <div class="scan-ring-wrap">
+              <div class="pulse"></div><div class="pulse"></div><div class="pulse"></div>
+              <div class="scan-icon" id="scanIcon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            </div>
+            <div class="scan-status" id="scanStatus">Listo para analizar tu dispositivo</div>
+            <p class="fs-13 mb-20" id="scanSubtitle">La última revisión fue hace 3 días. Se recomienda analizar semanalmente.</p>
+            <button class="btn btn-primary" id="scanBtn"><i class="fa-solid fa-magnifying-glass-chart"></i> Analizar dispositivo</button>
+
+            <div class="scan-log" id="scanLog"></div>
+          </div>
+
+          <div class="card result-hidden" id="resultsCard">
+            <div class="card-header">
+              <div><span class="card-eyebrow">Resultado</span><h3>Detalle del análisis</h3></div>
+              <span class="badge badge-medio">Riesgo medio</span>
+            </div>
+
+            <div class="metric-row">
+              <div class="flex items-center gap-12"><div class="stat-tile icon bg-orange" style="width:36px;height:36px;font-size:13px;"><i class="fa-solid fa-key"></i></div><div><b class="fs-13">Permisos inseguros</b><p class="fs-12">3 apps con acceso a cámara sin uso reciente</p></div></div>
+              <span class="fw-700">3</span>
+            </div>
+            <div class="metric-row">
+              <div class="flex items-center gap-12"><div class="stat-tile icon bg-blue" style="width:36px;height:36px;font-size:13px;"><i class="fa-solid fa-trash"></i></div><div><b class="fs-13">Archivos basura</b><p class="fs-12">Caché acumulada de apps y navegador</p></div></div>
+              <span class="fw-700">1.2 GB</span>
+            </div>
+            <div class="metric-row">
+              <div class="flex items-center gap-12"><div class="stat-tile icon bg-red" style="width:36px;height:36px;font-size:13px;"><i class="fa-solid fa-microchip"></i></div><div><b class="fs-13">Consumo de RAM</b><p class="fs-12">6 procesos en segundo plano</p></div></div>
+              <span class="fw-700">78%</span>
+            </div>
+            <div class="metric-row">
+              <div class="flex items-center gap-12"><div class="stat-tile icon bg-green" style="width:36px;height:36px;font-size:13px;"><i class="fa-solid fa-hard-drive"></i></div><div><b class="fs-13">Almacenamiento</b><p class="fs-12">Espacio disponible en el dispositivo</p></div></div>
+              <span class="fw-700">62% libre</span>
+            </div>
+            <div class="metric-row">
+              <div class="flex items-center gap-12"><div class="stat-tile icon bg-orange" style="width:36px;height:36px;font-size:13px;"><i class="fa-solid fa-triangle-exclamation"></i></div><div><b class="fs-13">Apps sospechosas</b><p class="fs-12">"VPN Gratis Ultra" solicita permisos excesivos</p></div></div>
+              <span class="fw-700">1</span>
+            </div>
+
+            <button class="btn btn-success btn-block mt-20" data-open-modal="modalOptimizar"><i class="fa-solid fa-broom"></i> Optimizar dispositivo</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-20">
+          <div class="card text-center">
+            <span class="card-eyebrow">Nivel de seguridad actual</span>
+            <div id="diagGauge" class="flex" style="justify-content:center;margin:14px 0;"></div>
+            <p class="fs-13">Estado general: <b class="text-warning">Atención requerida</b></p>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Recomendaciones</span><h3>Qué hacer ahora</h3></div></div>
+            <div class="flex flex-col gap-12">
+              <div class="flex items-center gap-12"><i class="fa-solid fa-circle-check text-success"></i><p class="fs-13">Revoca el acceso a la cámara de las 3 apps detectadas.</p></div>
+              <div class="flex items-center gap-12"><i class="fa-solid fa-circle-check text-success"></i><p class="fs-13">Desinstala "VPN Gratis Ultra" — patrón de permisos riesgoso.</p></div>
+              <div class="flex items-center gap-12"><i class="fa-solid fa-circle-check text-success"></i><p class="fs-13">Libera 1.2 GB de archivos temporales.</p></div>
+              <div class="flex items-center gap-12"><i class="fa-solid fa-circle-check text-success"></i><p class="fs-13">Activa verificación en dos pasos en tu correo principal.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+
+<!-- Modal Optimizar -->
+<div class="modal-overlay" id="modalOptimizar">
+  <div class="modal">
+    <div class="modal-header"><h3>Optimizar dispositivo</h3><button class="modal-close" data-close-modal><i class="fa-solid fa-xmark"></i></button></div>
+    <p class="fs-13">Vamos a liberar 1.2 GB de archivos innecesarios y cerrar los procesos en segundo plano detectados. Esto no eliminará tus datos personales.</p>
+    <div class="progress mt-20"><span id="optimizeBar" style="width:0%"></span></div>
+    <p class="fs-12 text-faint mt-8" id="optimizeStatus">Listo para iniciar</p>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Cancelar</button>
+      <button class="btn btn-success" id="startOptimize"><i class="fa-solid fa-broom"></i> Iniciar optimización</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'diagnostico', title:'Diagnóstico', crumbs:['Inicio','Diagnóstico Inteligente'] });
+  document.getElementById('diagGauge').innerHTML = Shield.gaugeSVG(64, { size:160, stroke:12 });
+  Shield.animateGauges();
+
+  const scanZone = document.getElementById('scanZone');
+  const scanBtn = document.getElementById('scanBtn');
+  const scanStatus = document.getElementById('scanStatus');
+  const scanSubtitle = document.getElementById('scanSubtitle');
+  const scanIcon = document.getElementById('scanIcon');
+  const scanLog = document.getElementById('scanLog');
+  const resultsCard = document.getElementById('resultsCard');
+
+  const steps = [
+    'Verificando permisos de aplicaciones…',
+    'Buscando archivos basura y caché…',
+    'Analizando consumo de RAM…',
+    'Escaneando apps sospechosas…',
+    'Comprobando configuración de red…',
+  ];
+
+  scanBtn.addEventListener('click', () => {
+    scanZone.classList.add('scanning');
+    scanBtn.disabled = true;
+    scanBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analizando…';
+    scanIcon.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
+    scanStatus.textContent = 'Analizando tu dispositivo…';
+    scanSubtitle.textContent = 'Esto tomará solo unos segundos.';
+    scanLog.innerHTML = steps.map((s,i) => `<div class="scan-log-item" id="log-${i}"><i class="fa-solid fa-circle-notch"></i> ${s}</div>`).join('');
+
+    steps.forEach((s,i) => {
+      setTimeout(() => { document.getElementById('log-'+i).classList.add('show'); }, 500 + i*650);
+    });
+
+    setTimeout(() => {
+      scanZone.classList.remove('scanning');
+      scanZone.classList.add('done');
+      scanIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+      scanStatus.textContent = 'Análisis completado';
+      scanSubtitle.textContent = 'Se detectaron 5 puntos que requieren tu atención.';
+      scanBtn.disabled = false;
+      scanBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Analizar de nuevo';
+      resultsCard.classList.remove('result-hidden');
+      Shield.toast('warning', 'Análisis completado', 'Detectamos 5 puntos de riesgo en tu dispositivo.');
+    }, 500 + steps.length*650 + 500);
+  });
+
+  document.getElementById('startOptimize').addEventListener('click', function(){
+    const btn = this;
+    const bar = document.getElementById('optimizeBar');
+    const status = document.getElementById('optimizeStatus');
+    btn.disabled = true;
+    let progress = 0;
+    status.textContent = 'Liberando espacio y cerrando procesos…';
+    const interval = setInterval(() => {
+      progress += 14;
+      bar.style.width = Math.min(progress,100) + '%';
+      if (progress >= 100){
+        clearInterval(interval);
+        status.textContent = '¡Listo! Se liberaron 1.2 GB y se cerraron 6 procesos.';
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Completado';
+        setTimeout(() => {
+          Shield.closeModal('modalOptimizar');
+          Shield.toast('success', 'Dispositivo optimizado', 'Tu Security Score mejorará en el próximo análisis.');
+        }, 900);
+      }
+    }, 350);
+  });
+</script>
+</body>
+</html>

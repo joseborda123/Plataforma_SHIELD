@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Score — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .score-hero{ display:flex; align-items:center; gap:40px; padding:40px; }
+  .score-breakdown-row{ display:flex; align-items:center; gap:16px; padding:14px 0; border-bottom:1px solid var(--border-soft); }
+  .score-breakdown-row:last-child{ border-bottom:none; }
+  .score-breakdown-row .mini-gauge{ width:46px; height:46px; flex:none; }
+  .score-scale{ display:flex; height:10px; border-radius:999px; overflow:hidden; margin:12px 0; }
+  .score-scale span{ flex:1; }
+  @media (max-width:900px){ .score-hero{ flex-direction:column; text-align:center; } }
+</style>
+</head>
+<body data-page="security-score">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div>
+          <h1>Shield Security Score</h1>
+          <p class="subtitle">Un solo número que resume qué tan protegido estás hoy.</p>
+        </div>
+        <a href="diagnostico.html" class="btn btn-primary"><i class="fa-solid fa-arrows-rotate"></i> Actualizar puntaje</a>
+      </div>
+
+      <div class="card score-hero mb-20">
+        <div id="mainGauge"></div>
+        <div style="flex:1;">
+          <span class="badge badge-medio">Bueno · Nivel 3 de 4</span>
+          <h2 class="mt-12" style="font-size:22px;">Tu protección es buena, pero puede ser excelente</h2>
+          <p class="mt-8" style="max-width:520px;line-height:1.7;">Tu puntaje de 78/100 refleja hábitos sólidos: has resuelto tus últimas 4 simulaciones y mantienes permisos controlados. Para llegar a "Excelente" necesitas reducir el consumo de RAM y eliminar la app sospechosa detectada en tu último diagnóstico.</p>
+          <div class="score-scale mt-16">
+            <span style="background:var(--danger)"></span>
+            <span style="background:var(--warning)"></span>
+            <span style="background:var(--secondary)"></span>
+            <span style="background:var(--success)"></span>
+          </div>
+          <div class="flex justify-between fs-12 text-faint">
+            <span>0 Crítico</span><span>40 Bajo</span><span>70 Medio</span><span>100 Excelente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-main">
+        <div class="card">
+          <div class="card-header"><div><span class="card-eyebrow">Composición del puntaje</span><h3>¿Qué afecta tu Security Score?</h3></div></div>
+
+          <div class="score-breakdown-row">
+            <div class="mini-gauge" id="b1"></div>
+            <div style="flex:1;"><b class="fs-13">Configuración del dispositivo</b><p class="fs-12">Permisos, actualizaciones y apps instaladas</p></div>
+            <span class="fw-700">88</span>
+          </div>
+          <div class="score-breakdown-row">
+            <div class="mini-gauge" id="b2"></div>
+            <div style="flex:1;"><b class="fs-13">Comportamiento ante simulaciones</b><p class="fs-12">Aciertos en phishing, SMS y llamadas falsas</p></div>
+            <span class="fw-700">91</span>
+          </div>
+          <div class="score-breakdown-row">
+            <div class="mini-gauge" id="b3"></div>
+            <div style="flex:1;"><b class="fs-13">Higiene de contraseñas</b><p class="fs-12">Reutilización y fortaleza de credenciales</p></div>
+            <span class="fw-700">54</span>
+          </div>
+          <div class="score-breakdown-row">
+            <div class="mini-gauge" id="b4"></div>
+            <div style="flex:1;"><b class="fs-13">Rendimiento del dispositivo</b><p class="fs-12">RAM, almacenamiento y procesos activos</p></div>
+            <span class="fw-700">62</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-20">
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Historial</span><h3>Últimos 30 días</h3></div></div>
+            <canvas id="scoreHistory" style="width:100%;height:150px;"></canvas>
+          </div>
+          <div class="card glass" style="border-color:rgba(37,99,235,.3)">
+            <h3>Cómo subir tu puntaje rápido</h3>
+            <ul class="flex flex-col gap-12 mt-16">
+              <li class="flex items-center gap-10 fs-13"><i class="fa-solid fa-key text-warning"></i> Actualiza 3 contraseñas repetidas (+6 pts)</li>
+              <li class="flex items-center gap-10 fs-13"><i class="fa-solid fa-trash text-warning"></i> Elimina la app sospechosa detectada (+5 pts)</li>
+              <li class="flex items-center gap-10 fs-13"><i class="fa-solid fa-user-secret text-warning"></i> Completa 1 simulación esta semana (+4 pts)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'security-score', title:'Security Score', crumbs:['Inicio','Security Score'] });
+
+  document.getElementById('mainGauge').innerHTML = Shield.gaugeSVG(78, { size:210, stroke:14 });
+  document.getElementById('b1').innerHTML = Shield.miniRing(88,46);
+  document.getElementById('b2').innerHTML = Shield.miniRing(91,46);
+  document.getElementById('b3').innerHTML = Shield.miniRing(54,46);
+  document.getElementById('b4').innerHTML = Shield.miniRing(62,46);
+  Shield.animateGauges();
+
+  Shield.drawLineChart(document.getElementById('scoreHistory'),
+    [52,55,58,54,60,63,61,66,68,65,70,72,70,74,76,73,78,78], '#10B981');
+</script>
+</body>
+</html>

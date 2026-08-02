@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .profile-tabs{ display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:24px; overflow-x:auto; }
+  .profile-tab{ padding:12px 18px; font-size:13.5px; color:var(--text-dim); border-bottom:2px solid transparent; white-space:nowrap; }
+  .profile-tab.active{ color:#fff; border-color:var(--secondary); }
+  .profile-panel{ display:none; }
+  .profile-panel.active{ display:block; animation: fade-up .3s var(--ease); }
+  .avatar-lg{ width:84px; height:84px; border-radius:50%; background:linear-gradient(135deg,var(--secondary),var(--success)); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#fff; }
+  .history-row{ display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-soft); }
+  .history-row:last-child{ border-bottom:none; }
+</style>
+</head>
+<body data-page="perfil">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row"><div><h1>Mi perfil</h1><p class="subtitle">Gestiona tu información, seguridad y preferencias.</p></div></div>
+
+      <div class="card mb-20" style="padding:26px;">
+        <div class="flex items-center gap-20" style="flex-wrap:wrap;">
+          <div class="avatar-lg">RV</div>
+          <div style="flex:1;min-width:200px;">
+            <h2 style="font-size:19px;">Renzo Vidal</h2>
+            <p class="fs-13 mt-8">renzo.vidal@ejemplo.com · Lima, Perú</p>
+            <div class="flex gap-10 mt-12">
+              <span class="badge badge-bajo"><i class="fa-solid fa-crown"></i> Plan Premium</span>
+              <span class="badge badge-medio">Nivel 12</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary"><i class="fa-solid fa-pen"></i> Editar foto</button>
+        </div>
+      </div>
+
+      <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="info">Información</button>
+        <button class="profile-tab" data-tab="seguridad">Contraseña y seguridad</button>
+        <button class="profile-tab" data-tab="suscripcion">Suscripción</button>
+        <button class="profile-tab" data-tab="historial">Historial</button>
+        <button class="profile-tab" data-tab="estadisticas">Estadísticas</button>
+      </div>
+
+      <!-- Información -->
+      <div class="profile-panel active" id="panel-info">
+        <div class="card" style="max-width:560px;">
+          <div class="grid grid-2">
+            <div class="field"><label>Nombre completo</label><div class="input-wrap"><i class="fa-solid fa-user"></i><input type="text" value="Renzo Vidal"></div></div>
+            <div class="field"><label>Correo electrónico</label><div class="input-wrap"><i class="fa-solid fa-envelope"></i><input type="email" value="renzo.vidal@ejemplo.com"></div></div>
+            <div class="field"><label>Teléfono</label><div class="input-wrap"><i class="fa-solid fa-phone"></i><input type="text" value="+51 987 654 321"></div></div>
+            <div class="field"><label>País</label><div class="input-wrap"><i class="fa-solid fa-location-dot"></i><input type="text" value="Perú"></div></div>
+          </div>
+          <button class="btn btn-primary" id="saveInfo">Guardar cambios</button>
+        </div>
+      </div>
+
+      <!-- Seguridad -->
+      <div class="profile-panel" id="panel-seguridad">
+        <div class="card" style="max-width:560px;">
+          <div class="field"><label>Contraseña actual</label><div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" placeholder="••••••••"></div></div>
+          <div class="field"><label>Nueva contraseña</label><div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" placeholder="Mínimo 8 caracteres"></div></div>
+          <div class="flex items-center justify-between mb-20" style="padding:14px; border:1px solid var(--border); border-radius:12px;">
+            <div><b class="fs-13">Autenticación en dos pasos</b><p class="fs-12 mt-8">Añade una capa extra de protección a tu cuenta.</p></div>
+            <label class="checkbox-row"><input type="checkbox" checked id="twoFA"></label>
+          </div>
+          <button class="btn btn-primary" id="savePass">Actualizar contraseña</button>
+        </div>
+      </div>
+
+      <!-- Suscripción -->
+      <div class="profile-panel" id="panel-suscripcion">
+        <div class="card" style="max-width:560px;">
+          <div class="flex justify-between items-center mb-16">
+            <div><b class="fs-14">Plan actual</b><p class="fs-12 mt-8">Renovación automática el 1 de agosto de 2026</p></div>
+            <span class="badge badge-bajo"><i class="fa-solid fa-crown"></i> Premium</span>
+          </div>
+          <div class="progress mb-16"><span style="width:70%"></span></div>
+          <p class="fs-12 text-faint mb-20">21 días restantes de tu ciclo actual</p>
+          <div class="flex gap-10">
+            <a href="premium.html" class="btn btn-secondary">Cambiar de plan</a>
+            <button class="btn btn-ghost" style="color:var(--danger)">Cancelar suscripción</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historial -->
+      <div class="profile-panel" id="panel-historial">
+        <div class="card" style="max-width:640px;" id="historyList"></div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="profile-panel" id="panel-estadisticas">
+        <div class="grid grid-4">
+          <div class="card stat-tile"><div class="icon bg-blue"><i class="fa-solid fa-user-secret"></i></div><div class="value">47</div><div class="label">Simulaciones completadas</div></div>
+          <div class="card stat-tile"><div class="icon bg-green"><i class="fa-solid fa-graduation-cap"></i></div><div class="value">12</div><div class="label">Cursos finalizados</div></div>
+          <div class="card stat-tile"><div class="icon bg-orange"><i class="fa-solid fa-flag"></i></div><div class="value">9</div><div class="label">Fraudes reportados</div></div>
+          <div class="card stat-tile"><div class="icon bg-red"><i class="fa-solid fa-shield-halved"></i></div><div class="value">18</div><div class="label">Días de protección seguida</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'perfil', title:'Perfil', crumbs:['Inicio','Perfil'] });
+
+  Shield.qsa('.profile-tab').forEach(tab => tab.addEventListener('click', () => {
+    Shield.qsa('.profile-tab').forEach(t => t.classList.remove('active'));
+    Shield.qsa('.profile-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+  }));
+
+  const history = [
+    { icon:'fa-user-secret', color:'bg-blue', title:'Simulación completada: Phishing bancario', time:'hace 2 días' },
+    { icon:'fa-magnifying-glass-chart', color:'bg-green', title:'Diagnóstico ejecutado — Score 78/100', time:'hace 3 días' },
+    { icon:'fa-flag', color:'bg-orange', title:'Reportaste un fraude verificado', time:'hace 5 días' },
+    { icon:'fa-graduation-cap', color:'bg-red', title:'Curso finalizado: Reconoce el phishing en segundos', time:'hace 1 semana' },
+  ];
+  document.getElementById('historyList').innerHTML = history.map(h => `
+    <div class="history-row">
+      <div class="stat-tile icon ${h.color}" style="width:36px;height:36px;font-size:13px;"><i class="fa-solid ${h.icon}"></i></div>
+      <div style="flex:1;"><b class="fs-13">${h.title}</b></div>
+      <span class="fs-12 text-faint">${h.time}</span>
+    </div>`).join('');
+
+  document.getElementById('saveInfo').addEventListener('click', () => Shield.toast('success','Información actualizada'));
+  document.getElementById('savePass').addEventListener('click', () => Shield.toast('success','Contraseña actualizada','Tu cuenta ahora es más segura.'));
+  document.getElementById('twoFA').addEventListener('change', e => Shield.toast(e.target.checked?'success':'warning', e.target.checked?'2FA activado':'2FA desactivado'));
+</script>
+</body>
+</html>

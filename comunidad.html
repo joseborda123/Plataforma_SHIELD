@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunidad — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .post-card{ display:flex; gap:16px; }
+  .vote-col{ display:flex; flex-direction:column; align-items:center; gap:6px; padding-top:2px; }
+  .vote-btn{ width:32px; height:32px; border-radius:9px; border:1px solid var(--border); background:var(--panel); color:var(--text-faint); display:flex; align-items:center; justify-content:center; transition:.15s var(--ease); }
+  .vote-btn:hover{ color:#fff; border-color:var(--secondary); }
+  .vote-btn.active{ color:var(--success); border-color:var(--success); }
+  .post-actions{ display:flex; gap:18px; margin-top:12px; }
+  .post-actions button{ background:none; border:none; color:var(--text-faint); font-size:12.5px; display:flex; align-items:center; gap:6px; }
+  .post-actions button:hover{ color:#fff; }
+  .featured-user{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-soft); }
+  .featured-user:last-child{ border-bottom:none; }
+</style>
+</head>
+<body data-page="comunidad">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div><h1>Comunidad SHIELD</h1><p class="subtitle">Reporta fraudes y entérate de estafas verificadas antes de que te lleguen.</p></div>
+        <button class="btn btn-primary" data-open-modal="modalReporte"><i class="fa-solid fa-flag"></i> Reportar fraude</button>
+      </div>
+
+      <div class="grid grid-main">
+        <div class="flex flex-col gap-16" id="feed"></div>
+
+        <div class="flex flex-col gap-20">
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Esta semana</span><h3>Alertas verificadas</h3></div></div>
+            <div class="flex flex-col gap-12">
+              <div class="flex items-center gap-10"><i class="fa-solid fa-circle-check text-success"></i><p class="fs-13">Ola de SMS falsos de "Interbank Seguro" en Lima.</p></div>
+              <div class="flex items-center gap-10"><i class="fa-solid fa-circle-check text-success"></i><p class="fs-13">Nueva variante de QR falso en restaurantes de Miraflores.</p></div>
+              <div class="flex items-center gap-10"><i class="fa-solid fa-circle-check text-success"></i><p class="fs-13">Correos falsos de SUNAT con adjunto malicioso.</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Usuarios destacados</span><h3>Top reportantes</h3></div></div>
+            <div class="featured-user"><div class="avatar" style="width:34px;height:34px;font-size:12px;">CR</div><div style="flex:1;"><b class="fs-13">Camila R.</b><p class="fs-12">42 reportes verificados</p></div></div>
+            <div class="featured-user"><div class="avatar" style="width:34px;height:34px;font-size:12px;">DM</div><div style="flex:1;"><b class="fs-13">Diego M.</b><p class="fs-12">37 reportes verificados</p></div></div>
+            <div class="featured-user"><div class="avatar" style="width:34px;height:34px;font-size:12px;">VT</div><div style="flex:1;"><b class="fs-13">Valeria T.</b><p class="fs-12">29 reportes verificados</p></div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+
+<div class="modal-overlay" id="modalReporte">
+  <div class="modal">
+    <div class="modal-header"><h3>Reportar un fraude</h3><button class="modal-close" data-close-modal><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="field"><label>Tipo de fraude</label>
+      <select><option>Phishing / correo falso</option><option>SMS falso</option><option>WhatsApp falso</option><option>Llamada falsa</option><option>Otro</option></select>
+    </div>
+    <div class="field"><label>Cuéntanos qué pasó</label>
+      <div class="input-wrap" style="padding:0;"><textarea rows="4" placeholder="Describe el intento de fraude…" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:12px;font-size:13.5px;"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Cancelar</button>
+      <button class="btn btn-primary" id="sendReport"><i class="fa-solid fa-paper-plane"></i> Enviar reporte</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'comunidad', title:'Comunidad', crumbs:['Inicio','Comunidad'] });
+
+  const posts = [
+    { user:'Camila R.', init:'CR', time:'hace 1 h', verified:true, title:'Cuidado con llamadas de "Movistar Seguridad"', body:'Me llamaron pidiendo un código que llega por SMS para "verificar mi línea". Es el mismo patrón para robar cuentas de WhatsApp.', up:64, comments:18 },
+    { user:'Jorge P.', init:'JP', time:'hace 3 h', verified:false, title:'QR falso pegado sobre el original en un grifo', desc:'', body:'En un grifo de la Panamericana Sur alguien pegó un sticker de QR falso sobre el datáfono. Revisen antes de escanear.', up:41, comments:9 },
+    { user:'Valeria T.', init:'VT', time:'hace 6 h', verified:true, title:'Nueva variante de correo falso de SUNAT', body:'Llega con un PDF adjunto que en realidad instala un troyano. El dominio remitente no termina en gob.pe.', up:88, comments:24 },
+    { user:'Diego M.', init:'DM', time:'hace 1 día', verified:false, title:'Marketplace: comprador insistía en pagar "fuera de la app"', body:'Ofrecía pagar de más si movíamos la conversación a WhatsApp. Es una señal clásica de estafa.', up:35, comments:6 },
+  ];
+
+  document.getElementById('feed').innerHTML = posts.map((p,i) => `
+    <div class="card post-card" data-reveal>
+      <div class="vote-col">
+        <button class="vote-btn upvote" data-i="${i}"><i class="fa-solid fa-chevron-up"></i></button>
+        <b class="fs-13" id="votes-${i}">${p.up}</b>
+        <button class="vote-btn"><i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+      <div style="flex:1;">
+        <div class="flex items-center gap-10 mb-8">
+          <div class="avatar" style="width:30px;height:30px;font-size:11px;">${p.init}</div>
+          <b class="fs-13">${p.user}</b>
+          <span class="fs-12 text-faint">${p.time}</span>
+          ${p.verified ? '<span class="badge badge-bajo"><i class="fa-solid fa-circle-check"></i> Verificado</span>' : ''}
+        </div>
+        <h3 class="fs-14">${p.title}</h3>
+        <p class="fs-13 mt-8">${p.body}</p>
+        <div class="post-actions">
+          <button><i class="fa-regular fa-comment"></i> ${p.comments} comentarios</button>
+          <button><i class="fa-solid fa-share-nodes"></i> Compartir</button>
+          <button><i class="fa-regular fa-flag"></i> Reportar</button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  Shield.qsa('.upvote').forEach(btn => btn.addEventListener('click', () => {
+    const i = btn.dataset.i;
+    const counter = document.getElementById('votes-'+i);
+    const isActive = btn.classList.toggle('active');
+    counter.textContent = parseInt(counter.textContent) + (isActive ? 1 : -1);
+  }));
+
+  document.getElementById('sendReport').addEventListener('click', () => {
+    const fraudType = document.querySelector('#modalReporte select').value;
+    const description = document.querySelector('#modalReporte textarea').value;
+    
+    if (description.trim()) {
+      // Crear nuevo reporte
+      const newPost = {
+        user: 'Tú',
+        init: 'TÚ',
+        time: 'ahora',
+        verified: false,
+        title: `${fraudType}`,
+        body: description,
+        up: 0,
+        comments: 0
+      };
+      
+      // Agregar al inicio del feed
+      posts.unshift(newPost);
+      
+      // Re-renderizar el feed
+      const feedEl = document.getElementById('feed');
+      feedEl.innerHTML = posts.map((p,i) => `
+        <div class="card post-card" data-reveal>
+          <div class="vote-col">
+            <button class="vote-btn upvote" data-i="${i}"><i class="fa-solid fa-chevron-up"></i></button>
+            <b class="fs-13" id="votes-${i}">${p.up}</b>
+            <button class="vote-btn"><i class="fa-solid fa-chevron-down"></i></button>
+          </div>
+          <div style="flex:1;">
+            <div class="flex items-center gap-10 mb-8">
+              <div class="avatar" style="width:30px;height:30px;font-size:11px;">${p.init}</div>
+              <b class="fs-13">${p.user}</b>
+              <span class="fs-12 text-faint">${p.time}</span>
+              ${p.verified ? '<span class="badge badge-bajo"><i class="fa-solid fa-circle-check"></i> Verificado</span>' : ''}
+            </div>
+            <h3 class="fs-14">${p.title}</h3>
+            <p class="fs-13 mt-8">${p.body}</p>
+            <div class="post-actions">
+              <button><i class="fa-regular fa-comment"></i> ${p.comments} comentarios</button>
+              <button><i class="fa-solid fa-share-nodes"></i> Compartir</button>
+              <button><i class="fa-regular fa-flag"></i> Reportar</button>
+            </div>
+          </div>
+        </div>`).join('');
+
+      // Re-vincular eventos para los nuevos elementos
+      Shield.qsa('.upvote').forEach(btn => btn.addEventListener('click', () => {
+        const i = btn.dataset.i;
+        const counter = document.getElementById('votes-'+i);
+        const isActive = btn.classList.toggle('active');
+        counter.textContent = parseInt(counter.textContent) + (isActive ? 1 : -1);
+      }));
+      
+      Shield.wireReveal();
+      
+      // Limpiar el formulario
+      document.querySelector('#modalReporte select').value = 'Phishing / correo falso';
+      document.querySelector('#modalReporte textarea').value = '';
+    }
+    
+    Shield.closeModal('modalReporte');
+    Shield.toast('success', 'Reporte enviado', 'Nuestro equipo lo verificará en las próximas horas.');
+  });
+
+  Shield.wireReveal();
+</script>
+</body>
+</html>

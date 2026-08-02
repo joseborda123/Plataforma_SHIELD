@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="dashboard">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div>
+          <h1 id="greeting">Hola, Javier 👋</h1>
+          <p class="subtitle">Este es el estado de tu protección digital hoy, 16 de julio.</p>
+        </div>
+        <div class="flex gap-12">
+          <a href="diagnostico.html" class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass-chart"></i> Analizar dispositivo</a>
+          <a href="simulaciones.html" class="btn btn-primary"><i class="fa-solid fa-user-secret"></i> Iniciar simulación</a>
+        </div>
+      </div>
+
+      <!-- Stats rápidos -->
+      <div class="grid grid-4 mb-20">
+        <div class="card stat-tile" data-reveal>
+          <div class="icon bg-blue"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="value">78/100</div>
+          <div class="label">Shield Security Score</div>
+          <span class="delta up"><i class="fa-solid fa-arrow-up"></i> +4 esta semana</span>
+        </div>
+        <div class="card stat-tile" data-reveal>
+          <div class="icon bg-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="value">2</div>
+          <div class="label">Amenazas detectadas</div>
+          <span class="delta down"><i class="fa-solid fa-arrow-down"></i> -1 vs. ayer</span>
+        </div>
+        <div class="card stat-tile" data-reveal>
+          <div class="icon bg-green"><i class="fa-solid fa-trophy"></i></div>
+          <div class="value">24</div>
+          <div class="label">Misiones completadas</div>
+          <span class="delta up"><i class="fa-solid fa-arrow-up"></i> +3 este mes</span>
+        </div>
+        <div class="card stat-tile" data-reveal>
+          <div class="icon bg-orange"><i class="fa-solid fa-clock"></i></div>
+          <div class="value">18 días</div>
+          <div class="label">Tiempo protegido</div>
+          <span class="delta up">Racha activa <i class="fa-solid fa-fire"></i></span>
+        </div>
+      </div>
+
+      <div class="grid grid-main mb-20">
+        <!-- Columna izquierda -->
+        <div class="flex flex-col gap-20">
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <span class="card-eyebrow">Últimos 7 días</span>
+                <h3>Evolución del Security Score</h3>
+              </div>
+              <span class="badge badge-bajo">Tendencia positiva</span>
+            </div>
+            <canvas id="scoreTrend" style="width:100%;height:180px;"></canvas>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <span class="card-eyebrow">Diagnóstico</span>
+                <h3>Estado del dispositivo</h3>
+              </div>
+              <a href="diagnostico.html" class="btn btn-ghost btn-sm">Ver detalle <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="grid grid-2" style="gap:16px;">
+              <div>
+                <div class="progress-row"><span>Permisos seguros</span><span>84%</span></div>
+                <div class="progress"><span style="width:84%"></span></div>
+              </div>
+              <div>
+                <div class="progress-row"><span>Almacenamiento libre</span><span>62%</span></div>
+                <div class="progress"><span style="width:62%;background:linear-gradient(90deg,var(--warning),var(--secondary));"></span></div>
+              </div>
+              <div>
+                <div class="progress-row"><span>RAM disponible</span><span>47%</span></div>
+                <div class="progress"><span style="width:47%;background:linear-gradient(90deg,var(--danger),var(--warning));"></span></div>
+              </div>
+              <div>
+                <div class="progress-row"><span>Apps verificadas</span><span>91%</span></div>
+                <div class="progress"><span style="width:91%"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="alertas">
+            <div class="card-header">
+              <div><span class="card-eyebrow">Centro de Alertas</span><h3>Actividad reciente</h3></div>
+              <a href="#" class="btn btn-ghost btn-sm">Ver todas</a>
+            </div>
+            <div class="flex flex-col gap-12" id="alertList"></div>
+          </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="flex flex-col gap-20">
+          <div class="card text-center">
+            <span class="card-eyebrow">Shield Security Score</span>
+            <div id="dashGauge" class="flex" style="justify-content:center;margin:14px 0;"></div>
+            <p class="fs-13">Tu protección es <b class="text-success">buena</b>. Completa 2 simulaciones más para llegar a "Excelente".</p>
+            <a href="security-score.html" class="btn btn-secondary btn-block mt-16">Ver análisis completo</a>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Gamificación</span><h3>Nivel 12 — Guardián Digital</h3></div></div>
+            <div class="progress-row"><span>3,260 XP</span><span>4,000 XP</span></div>
+            <div class="progress"><span style="width:81.5%"></span></div>
+            <div class="flex gap-10 mt-16">
+              <div class="stat-tile icon bg-blue" style="width:34px;height:34px;font-size:13px;"><i class="fa-solid fa-medal"></i></div>
+              <div class="stat-tile icon bg-green" style="width:34px;height:34px;font-size:13px;"><i class="fa-solid fa-bolt"></i></div>
+              <div class="stat-tile icon bg-orange" style="width:34px;height:34px;font-size:13px;"><i class="fa-solid fa-fire"></i></div>
+              <span class="fs-12 text-faint" style="align-self:center;">+3 insignias nuevas</span>
+            </div>
+            <a href="gamificacion.html" class="btn btn-ghost btn-block mt-16">Ver progreso</a>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Última simulación</span><h3>Phishing bancario</h3></div><span class="badge badge-alto">Alto</span></div>
+            <p class="fs-13 mb-16">Superaste el intento de estafa detectando el enlace falso de "BCP Seguro" en 14 segundos.</p>
+            <div class="flex justify-between fs-12 text-faint">
+              <span><i class="fa-solid fa-bolt"></i> +120 XP</span>
+              <span><i class="fa-solid fa-clock"></i> hace 2 días</span>
+            </div>
+            <a href="simulaciones.html" class="btn btn-primary btn-block mt-16">Nueva simulación</a>
+          </div>
+
+          <div class="card glass text-center" style="border-color:rgba(37,99,235,.3)">
+            <i class="fa-solid fa-crown" style="font-size:22px;color:var(--warning);"></i>
+            <h3 class="mt-12">Desbloquea Shield Premium</h3>
+            <p class="fs-13 mt-8">Diagnóstico ilimitado, simulaciones nuevas cada semana y soporte 24/7.</p>
+            <a href="premium.html" class="btn btn-primary btn-block mt-16">Actualizar plan</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'dashboard', title:'Dashboard', crumbs:['Inicio','Dashboard'] });
+  
+  // Mostrar nombre del usuario dinámicamente
+  const userName = localStorage.getItem('userNombre') || 'Javier';
+  const firstName = userName.split(' ')[0];
+  document.getElementById('greeting').textContent = 'Hola, ' + firstName + ' 👋';
+
+  document.getElementById('dashGauge').innerHTML = Shield.gaugeSVG(78, { size:170, stroke:12 });
+  Shield.animateGauges();
+  Shield.drawLineChart(document.getElementById('scoreTrend'), [58,61,65,70,68,74,78], '#3B82F6');
+
+  const alerts = [
+    { level:'critico', icon:'fa-triangle-exclamation', title:'Enlace sospechoso detectado', desc:'App de Mensajes · hace 12 min' },
+    { level:'medio', icon:'fa-location-dot', title:'Permiso de ubicación abierto', desc:'"Linterna Pro" · hace 2 h' },
+    { level:'bajo', icon:'fa-arrow-up-right-dots', title:'Actualización disponible', desc:'Shield v4.2.1 · hace 1 día' },
+  ];
+  const labelMap = { critico:'Crítico', alto:'Alto', medio:'Medio', bajo:'Bajo' };
+  document.getElementById('alertList').innerHTML = alerts.map(a => `
+    <div class="flex items-center gap-12" style="padding:12px;border:1px solid var(--border);border-radius:14px;">
+      <div class="stat-tile icon bg-${a.level==='critico'?'red':a.level==='medio'?'blue':'green'}" style="width:38px;height:38px;font-size:14px;"><i class="fa-solid ${a.icon}"></i></div>
+      <div style="flex:1">
+        <div class="flex items-center gap-8"><b class="fs-13">${a.title}</b><span class="badge badge-${a.level}">${labelMap[a.level]}</span></div>
+        <p class="fs-12 mt-8">${a.desc}</p>
+      </div>
+      <button class="btn btn-ghost btn-sm">Ver detalles</button>
+    </div>`).join('');
+
+  Shield.wireReveal();
+</script>
+</body>
+</html>

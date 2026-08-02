@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Simulaciones — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .sim-card{ display:flex; flex-direction:column; gap:14px; }
+  .sim-card .sim-icon{ width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:19px; color:#fff; }
+  .sim-meta{ display:flex; gap:16px; font-size:12px; color:var(--text-faint); }
+  .sim-meta span{ display:flex; align-items:center; gap:6px; }
+</style>
+</head>
+<body data-page="simulaciones">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div>
+          <h1>Centro de Simulaciones</h1>
+          <p class="subtitle">Practica reconociendo estafas reales, sin ningún riesgo real.</p>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <button class="chip active" data-filter="todas">Todas</button>
+        <button class="chip" data-filter="phishing">Phishing</button>
+        <button class="chip" data-filter="mensajeria">Mensajería</button>
+        <button class="chip" data-filter="financiero">Financiero</button>
+        <button class="chip" data-filter="gobierno">Gobierno</button>
+      </div>
+
+      <div class="grid grid-3" id="simGrid"></div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+
+<!-- Modal de simulación interactiva -->
+<div class="modal-overlay" id="modalSimInteractive" style="z-index:100;">
+  <div class="modal" style="max-width:700px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header"><h3 id="simInteractiveTitle">Simulación</h3><button class="modal-close" data-close-modal><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="simContent"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'simulaciones', title:'Simulaciones', crumbs:['Inicio','Centro de Simulaciones'] });
+
+  const sims = [
+    { id:'phishing', cat:'phishing', icon:'fa-envelope-open-text', color:'bg-red', title:'Phishing por correo', desc:'Un correo urgente de "soporte técnico" pide tus credenciales.', level:'Alto', time:'3 min', xp:120 },
+    { id:'sms', cat:'mensajeria', icon:'fa-comment-sms', color:'bg-orange', title:'SMS falso', desc:'Un mensaje de texto anuncia un premio que nunca ganaste.', level:'Medio', time:'2 min', xp:80 },
+    { id:'correo', cat:'phishing', icon:'fa-at', color:'bg-red', title:'Correo falso de empresa', desc:'Una factura falsa solicita el pago urgente a otra cuenta.', level:'Alto', time:'4 min', xp:130 },
+    { id:'whatsapp', cat:'mensajeria', icon:'fa-brands fa-whatsapp', color:'bg-green', title:'WhatsApp falso', desc:'Un "familiar" con número nuevo pide dinero prestado.', level:'Medio', time:'3 min', xp:90 },
+    { id:'qr', cat:'financiero', icon:'fa-qrcode', color:'bg-blue', title:'Código QR falso', desc:'Un QR en un restaurante redirige a un sitio clonado.', level:'Medio', time:'2 min', xp:85 },
+    { id:'banco', cat:'financiero', icon:'fa-building-columns', color:'bg-blue', title:'Banco falso', desc:'Una llamada de "seguridad del banco" pide tu clave.', level:'Crítico', time:'5 min', xp:160 },
+    { id:'yape', cat:'financiero', icon:'fa-mobile-screen', color:'bg-orange', title:'Yape falso', desc:'Una captura de pago falsa intenta confundirte en una venta.', level:'Alto', time:'3 min', xp:110 },
+    { id:'sunat', cat:'gobierno', icon:'fa-landmark', color:'bg-red', title:'SUNAT falsa', desc:'Un correo amenaza con una multa si no pagas "de inmediato".', level:'Crítico', time:'4 min', xp:150 },
+    { id:'marketplace', cat:'financiero', icon:'fa-store', color:'bg-green', title:'Marketplace falso', desc:'Un comprador insiste en pagar por fuera de la plataforma.', level:'Medio', time:'3 min', xp:95 },
+  ];
+
+  // Simulaciones interactivas
+  const interactiveSims = {
+    phishing: {
+      title: 'Phishing por correo',
+      xp: 120,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0;overflow:hidden;">
+          <!-- Email Header -->
+          <div style="background:var(--panel);padding:12px 16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:11px;color:var(--text-faint);margin-bottom:8px;">De: support@securityalert.com</div>
+            <div style="font-size:11px;color:var(--text-faint);margin-bottom:8px;">Para: tu_email@gmail.com</div>
+            <div style="font-weight:600;">Alerta de seguridad urgente en tu cuenta</div>
+          </div>
+          <!-- Email Body -->
+          <div style="padding:16px;">
+            <p style="margin:0 0 16px 0;">Hola,</p>
+            <p style="margin:0 0 16px 0;">Hemos detectado <b>actividad sospechosa</b> en tu cuenta. Para protegerla, debes verificar tu identidad <b>de inmediato</b>.</p>
+            <div style="background:rgba(255,0,0,0.1);border:1px solid #ff4444;border-radius:8px;padding:12px;margin:16px 0;font-size:12px;color:#ff4444;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Si no actúas en 24 horas, tu cuenta será bloqueada.
+            </div>
+            <p style="margin:0 0 16px 0;"><button class="btn btn-danger" onclick="detectarAlerta(0)">VERIFICAR IDENTIDAD AHORA</button></p>
+            <p style="margin:0;font-size:12px;color:var(--text-faint);">Este es un correo automático. No responder a este correo.</p>
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Qué está mal en este correo? Selecciona todas las señales de alerta:</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('phishing')"> El dominio del remitente no es oficial (securityalert.com, no gmail.com)
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('phishing')"> Tono urgente y amenaza de bloqueo (táctica de presión)
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('phishing')"> Pide verificación de identidad por correo (nunca lo hacen así)
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('phishing')"> El botón rojo intenta simular un sitio de phishing
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('phishing')">Enviar respuesta</button>
+        </div>
+      `
+    },
+    sms: {
+      title: 'SMS falso',
+      xp: 80,
+      html: `
+        <div style="max-width:400px;margin:0 auto;">
+          <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:20px;padding:20px;color:white;margin-bottom:20px;">
+            <div style="text-align:center;margin-bottom:10px;">
+              <i class="fa-brands fa-apple" style="font-size:24px;"></i>
+            </div>
+            <div style="font-size:12px;margin-bottom:16px;text-align:center;opacity:0.9;">Hoy 14:32</div>
+            <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;">
+              <div style="margin-bottom:8px;"><b>Unknown</b></div>
+              ¡FELICIDADES! 🎉 Has ganado un iPhone 15 PRO. Reclama tu premio ahora: https://apple-award.com/claim
+            </div>
+            <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:12px;font-size:13px;margin-top:10px;">
+              <div style="margin-bottom:8px;"><b>Unknown</b></div>
+              No olvides ingresar con tu Apple ID para confirmar. ¡Solo 10 min disponibles!
+            </div>
+          </div>
+
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Cómo responderías a este SMS?</b></p>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <button class="btn btn-secondary" onclick="responderSMS('mal1')">Hacer clic en el enlace para reclamar</button>
+            <button class="btn btn-secondary" onclick="responderSMS('mal2')">Ingresar mi Apple ID en el sitio</button>
+            <button class="btn btn-primary" onclick="responderSMS('bien')">Ignorar, nunca gané nada. Es phishing</button>
+            <button class="btn btn-secondary" onclick="responderSMS('mal3')">Llamar al número mostrado</button>
+          </div>
+        </div>
+      `
+    },
+    correo: {
+      title: 'Correo falso de empresa',
+      xp: 130,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0;overflow:hidden;">
+          <!-- Email Header -->
+          <div style="background:var(--panel);padding:12px 16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:11px;color:var(--text-faint);margin-bottom:8px;">De: facturacion@acme-solutions.co</div>
+            <div style="font-size:11px;color:var(--text-faint);margin-bottom:8px;">Para: tu_email@tuempresa.com</div>
+            <div style="font-weight:600;">FACTURA PENDIENTE - PAGO URGENTE</div>
+          </div>
+          <!-- Email Body -->
+          <div style="padding:16px;">
+            <p style="margin:0 0 12px 0;"><b>Estimado Cliente,</b></p>
+            <p style="margin:0 0 12px 0;">Le informamos que tiene una factura pendiente de pago.</p>
+            
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin:16px 0;font-size:12px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div>Factura: INV-2024-0812</div>
+                <div><b>Monto: S/. 2,450.00</b></div>
+                <div>Vencimiento: 15 Jul 2024</div>
+                <div style="color:var(--danger);">Estado: VENCIDO</div>
+              </div>
+            </div>
+
+            <p style="margin:0 0 12px 0;"><b>Para realizar el pago, transfiere a:</b></p>
+            <div style="background:rgba(255,0,0,0.1);border:2px solid #ff4444;border-radius:8px;padding:12px;margin:12px 0;font-size:12px;">
+              <div>Banco: Scotiabank</div>
+              <div>Cuenta: 2210123456789</div>
+              <div>CCI: 00221070123456789012</div>
+              <div style="margin-top:8px;font-size:11px;color:#ff4444;"><b>⚠ Transferencia debe ser hoy para evitar penalidades</b></div>
+            </div>
+
+            <p style="margin:0;font-size:11px;color:var(--text-faint);">Gracias,<br>Equipo Administrativo ACME</p>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Cuáles son las señales de alerta? (Selecciona todas las correctas)</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('correo')"> El dominio es "acme-solutions.co" (similar pero no oficial)
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('correo')"> Cuenta bancaria con números sospechosos (no sigue formato)
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('correo')"> Presión para transferir HOY (urgencia falsa)
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('correo')"> Nunca se debe pedir transferencia directa por correo
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('correo')">Enviar respuesta</button>
+        </div>
+      `
+    },
+    whatsapp: {
+      title: 'WhatsApp falso',
+      xp: 90,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;">
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;">
+            <div style="width:44px;height:44px;border-radius:14px;background:var(--panel);display:flex;align-items:center;justify-content:center;"><i class="fa-brands fa-whatsapp" style="color:var(--success);"></i></div>
+            <div>
+              <div style="font-weight:700;">Mamá</div>
+              <div style="font-size:12px;color:var(--text-faint);">Ahora</div>
+            </div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:16px;font-size:14px;line-height:1.6;">
+            Hola, amor. Te acabo de enviar un mensaje desde otro número, necesito S/ 450 urgente para una operación. Transfiere a este Yape y luego te devuelvo.
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Qué te hace sospechar de este mensaje?</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('whatsapp')"> El mensaje viene de un número nuevo y no del contacto guardado
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('whatsapp')"> Solicita dinero urgente sin llamar primero
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('whatsapp')"> Usa una historia emocional para presionarte
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('whatsapp')"> Pide transferencia por fuera de una conversación habitual
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('whatsapp')">Enviar respuesta</button>
+        </div>
+      `
+    },
+    qr: {
+      title: 'Código QR falso',
+      xp: 85,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div>
+              <div style="font-size:12px;color:var(--text-faint);">Restaurante</div>
+              <div style="font-weight:700;">[Imagen de QR]</div>
+            </div>
+            <span class="badge badge-medio">Medio</span>
+          </div>
+          <div style="background:var(--panel);border-radius:14px;padding:16px;font-size:13px;line-height:1.6;">
+            Escaneaste un código QR pegado sobre un cajero automático. Te pide abrir un enlace reducido que promete descuento en tu delivery.
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Qué indica que el QR es riesgoso?</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('qr')"> El código está pegado sobre el original, no es oficial
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('qr')"> El enlace reducido no muestra el dominio real
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('qr')"> Ofrece un descuento demasiado bueno para ser verdad
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('qr')"> Es un pedido de acción inmediata sin verificar el comercio
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('qr')">Enviar respuesta</button>
+        </div>
+      `
+    },
+    banco: {
+      title: 'Banco falso',
+      xp: 160,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div>
+              <div style="font-size:12px;color:var(--text-faint);">Llamada de seguridad bancaria</div>
+              <div style="font-weight:700;">Banco Inter</div>
+            </div>
+            <span class="badge badge-critico">Crítico</span>
+          </div>
+          <div style="background:var(--panel);border-radius:14px;padding:16px;font-size:13px;line-height:1.6;">
+            "Hola, soy del área de seguridad del banco. Detectamos un intento de acceso no autorizado en tu cuenta y necesitamos tu clave y token para bloquearlo.".
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Qué señales de estafa ves en esta llamada?</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('banco')"> Pide clave y token, datos que el banco nunca solicita por teléfono
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('banco')"> Usa urgencia para que no lo pienses
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('banco')"> Dice haber detectado un acceso no autorizado sin verificar tu identidad primero
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('banco')"> Te pide operar fuera de los canales oficiales
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('banco')">Enviar respuesta</button>
+        </div>
+      `
+    },
+    yape: {
+      title: 'Yape falso',
+      xp: 110,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div>
+              <div style="font-size:12px;color:var(--text-faint);">Pago urgente por Yape</div>
+              <div style="font-weight:700;">Vendedor desconocido</div>
+            </div>
+            <span class="badge badge-alto">Alto</span>
+          </div>
+          <div style="background:var(--panel);border-radius:14px;padding:16px;font-size:13px;line-height:1.6;">
+            "Hola, te envió mi amigo el número para que pagues S/ 180 por la compra. Envía a este Yape y te confirmo en 5 minutos.".
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Qué te hace sospechar del pedido?</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('yape')"> El pago pide enviar dinero inmediato sin verificaciones
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('yape')"> No confirma identidad del comprador ni app de la venta
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('yape')"> Menciona a un tercero para generar confianza rápidamente
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('yape')"> No hay comprobante de la compra en la app de marketplace
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('yape')">Enviar respuesta</button>
+        </div>
+      `
+    },
+    sunat: {
+      title: 'SUNAT falsa',
+      xp: 150,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div>
+              <div style="font-size:12px;color:var(--text-faint);">Correo urgente de SUNAT</div>
+              <div style="font-weight:700;">sunat@alerta-fiscal.com</div>
+            </div>
+            <span class="badge badge-critico">Crítico</span>
+          </div>
+          <div style="background:var(--panel);border-radius:14px;padding:16px;font-size:13px;line-height:1.6;">
+            "Notificación: tienes una deuda tributaria urgente. Si no pagas en 24 horas, se iniciará un proceso de embargo. Haz clic en el enlace para evitar multas.".
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Qué indica que este correo es falso?</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('sunat')"> El correo no usa el dominio oficial gob.pe
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('sunat')"> Amenaza con embargo inmediato para generar miedo
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('sunat')"> Pide clic en un enlace para pagar en lugar de revisar la cuenta oficial
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('sunat')"> No incluye datos personalizados de tu RUC o empresa
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('sunat')">Enviar respuesta</button>
+        </div>
+      `
+    },
+    marketplace: {
+      title: 'Marketplace falso',
+      xp: 95,
+      html: `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div>
+              <div style="font-size:12px;color:var(--text-faint);">Compra en línea</div>
+              <div style="font-weight:700;">Comprador interesado</div>
+            </div>
+            <span class="badge badge-medio">Medio</span>
+          </div>
+          <div style="background:var(--panel);border-radius:14px;padding:16px;font-size:13px;line-height:1.6;">
+            "Hola, el artículo me interesa. Pagaremos más si haces la transacción fuera de la app. Envíame tu número de cuenta o Yape para transferir directo.".
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <p class="fs-13" style="margin-bottom:16px;"><b>¿Por qué es sospechoso este mensaje?</b></p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('marketplace')"> Pide mover la conversación fuera de la plataforma segura
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('marketplace')"> Ofrece pagar más para evitar las reglas del marketplace
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('marketplace')"> Solicita datos de pago directos en lugar del método oficial
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" onchange="verificarRespuesta('marketplace')"> Intenta generar presión para actuar rápido
+            </label>
+          </div>
+          <button class="btn btn-primary btn-block mt-16" onclick="verificarSimulacion('marketplace')">Enviar respuesta</button>
+        </div>
+      `
+    }
+  };
+
+  let respuestasUsuario = {};
+  let simActual = null;
+
+  function detectarAlerta(index) {
+    Shield.toast('danger', 'No hagas clic', 'Este es un botón de phishing simulado. ¡Buena reacción!');
+  }
+
+  function responderSMS(opcion) {
+    simActual = 'sms';
+    if (opcion === 'bien') {
+      Shield.toast('success', '¡Correcto!', 'Identificaste el SMS de phishing. Los premios no se reclaman por SMS.');
+      setTimeout(() => {
+        finalizarSimulacion('sms', 80);
+      }, 1500);
+    } else {
+      Shield.toast('danger', 'Incorrecto', 'Caíste en la estafa. Estos SMS son phishing común.');
+      setTimeout(() => {
+        Shield.closeModal('modalSimInteractive');
+      }, 1500);
+    }
+  }
+
+  function verificarRespuesta(simId) {
+    // Solo para tracking
+  }
+
+  function verificarSimulacion(simId) {
+    const checkboxes = Shield.qsa('#simContent input[type="checkbox"]:checked', document);
+    const totalCheckboxes = Shield.qsa('#simContent input[type="checkbox"]', document).length;
+    
+    if (checkboxes.length === totalCheckboxes) {
+      Shield.toast('success', '¡Perfecto!', 'Identificaste todas las señales de alerta correctamente.');
+      setTimeout(() => {
+        const xp = interactiveSims[simId] ? interactiveSims[simId].xp : 0;
+        finalizarSimulacion(simId, xp);
+      }, 1500);
+    } else {
+      Shield.toast('warning', 'No completaste', 'Te faltaron ' + (totalCheckboxes - checkboxes.length) + ' señales de alerta.');
+    }
+  }
+
+  function finalizarSimulacion(simId, xp) {
+    Shield.closeModal('modalSimInteractive');
+    Shield.toast('success', '¡Simulación completada!', 'Ganaste +' + xp + ' XP');
+  }
+
+  function iniciarSimulacion(id) {
+    if (interactiveSims[id]) {
+      simActual = id;
+      const sim = interactiveSims[id];
+      document.getElementById('simInteractiveTitle').textContent = sim.title;
+      document.getElementById('simContent').innerHTML = sim.html;
+      Shield.openModal('modalSimInteractive');
+    } else {
+      Shield.toast('info', 'Simulación iniciada', 'Mantente alerta a las señales de estafa…');
+      setTimeout(() => Shield.toast('success', '¡Bien hecho!', 'Detectaste la estafa correctamente. +120 XP'), 2200);
+    }
+  }
+
+  const grid = document.getElementById('simGrid');
+  function render(filter){
+    const list = filter === 'todas' ? sims : sims.filter(s => s.cat === filter);
+    grid.innerHTML = list.map(s => `
+      <div class="card sim-card" data-reveal>
+        <div class="flex justify-between items-start">
+          <div class="sim-icon ${s.color}"><i class="fa-solid ${s.icon.replace('fa-solid ','')}"></i></div>
+          <span class="badge badge-${s.level==='Crítico'?'critico':s.level==='Alto'?'alto':'medio'}">${s.level}</span>
+        </div>
+        <div>
+          <h3 class="fs-14">${s.title}</h3>
+          <p class="fs-13 mt-8">${s.desc}</p>
+        </div>
+        <div class="sim-meta">
+          <span><i class="fa-regular fa-clock"></i> ${s.time}</span>
+          <span><i class="fa-solid fa-bolt"></i> ${s.xp} XP</span>
+        </div>
+        <button class="btn btn-primary btn-block start-sim" data-id="${s.id}" data-title="${s.title}">
+          <i class="fa-solid fa-play"></i> Iniciar
+        </button>
+      </div>`).join('');
+
+    Shield.qsa('.start-sim', grid).forEach(btn => btn.addEventListener('click', () => {
+      iniciarSimulacion(btn.dataset.id);
+    }));
+  }
+  render('todas');
+
+  Shield.qsa('.chip').forEach(chip => chip.addEventListener('click', () => {
+    Shield.qsa('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    render(chip.dataset.filter);
+  }));
+
+  Shield.wireReveal();
+</script>
+</body>
+</html>

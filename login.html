@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHIELD — Acceder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <!-- Panel visual -->
+  <div class="auth-visual">
+    <div class="halo-bg" id="authGauge"></div>
+    <div style="position:relative;z-index:2;max-width:420px;">
+      <div class="flex items-center gap-10 mb-20">
+        <div class="logo-mark" style="width:38px;height:38px;border-radius:12px;background:conic-gradient(from 220deg,var(--secondary),var(--success),var(--secondary));display:flex;align-items:center;justify-content:center;">
+          <i class="fa-solid fa-shield-halved" style="color:#0B1120"></i>
+        </div>
+        <b style="font-family:var(--font-display);font-size:18px;">SHIELD</b>
+      </div>
+      <h1 style="font-size:30px;line-height:1.2;">Tu escudo contra las estafas digitales.</h1>
+      <p class="mt-16" style="line-height:1.7;">Diagnóstico, simulaciones de ataques reales y una comunidad que reporta el fraude antes de que te llegue. Todo en un solo lugar.</p>
+      <div class="flex gap-20 mt-24">
+        <div><b class="fs-13" style="display:block;color:#fff;font-family:var(--font-display);font-size:20px;">78</b><span class="fs-12 text-faint">Security Score promedio</span></div>
+        <div><b class="fs-13" style="display:block;color:#fff;font-family:var(--font-display);font-size:20px;">4.9M+</b><span class="fs-12 text-faint">Ataques simulados</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de formulario -->
+  <div class="auth-form-side">
+    <div class="auth-card">
+
+      <div class="flex items-center gap-10 mb-20" style="justify-content:center;">
+        <a href="index.html" class="text-faint fs-13"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Iniciar sesión</button>
+        <button class="tab-btn" data-tab="registro">Crear cuenta</button>
+        <button class="tab-btn" data-tab="recuperar">Recuperar</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="auth-panel active" id="panel-login">
+        <h2 class="text-center mb-8">Bienvenido de vuelta</h2>
+        <p class="text-center fs-13 mb-20">Ingresa para revisar el estado de tu protección.</p>
+        <form id="formLogin">
+          <div class="field">
+            <label>Correo electrónico</label>
+            <div class="input-wrap"><i class="fa-solid fa-envelope"></i><input type="email" placeholder="tucorreo@ejemplo.com" required></div>
+          </div>
+          <div class="field">
+            <label>Contraseña</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="loginPass" placeholder="••••••••" required>
+              <i class="fa-solid fa-eye toggle-pass" data-target="loginPass"></i>
+            </div>
+          </div>
+          <div class="flex justify-between items-center mb-20">
+            <label class="checkbox-row"><input type="checkbox"> Recordarme</label>
+            <button type="button" class="tab-link fs-13 text-dim" data-tab="recuperar" style="background:none;border:none;">¿Olvidaste tu contraseña?</button>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Iniciar sesión <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+        <div class="divider-text">o continúa con</div>
+        <div class="social-row">
+          <button class="social-btn"><i class="fa-brands fa-google"></i> Google</button>
+          <button class="social-btn"><i class="fa-brands fa-apple"></i> Apple</button>
+        </div>
+      </div>
+
+      <!-- REGISTRO -->
+      <div class="auth-panel" id="panel-registro">
+        <h2 class="text-center mb-8">Crea tu cuenta gratis</h2>
+        <p class="text-center fs-13 mb-20">Empieza a proteger tu vida digital en menos de 1 minuto.</p>
+        <form id="formRegistro">
+          <div class="field">
+            <label>Nombre completo</label>
+            <div class="input-wrap"><i class="fa-solid fa-user"></i><input type="text" placeholder="Renzo Vidal" required></div>
+          </div>
+          <div class="field">
+            <label>Correo electrónico</label>
+            <div class="input-wrap"><i class="fa-solid fa-envelope"></i><input type="email" placeholder="tucorreo@ejemplo.com" required></div>
+          </div>
+          <div class="field">
+            <label>Contraseña</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="regPass" placeholder="Mínimo 8 caracteres" required>
+              <i class="fa-solid fa-eye toggle-pass" data-target="regPass"></i>
+            </div>
+            <div class="progress thin mt-8"><span id="passStrength" style="width:0%;background:var(--danger);"></span></div>
+            <div class="hint" id="passHint">Fuerza de la contraseña</div>
+          </div>
+          <label class="checkbox-row mb-20"><input type="checkbox" required> Acepto los <a href="#" class="text-dim" style="text-decoration:underline;">Términos</a> y la <a href="#" class="text-dim" style="text-decoration:underline;">Política de privacidad</a></label>
+          <button type="submit" class="btn btn-primary btn-block">Crear cuenta <i class="fa-solid fa-shield-halved"></i></button>
+        </form>
+      </div>
+
+      <!-- RECUPERAR -->
+      <div class="auth-panel" id="panel-recuperar">
+        <h2 class="text-center mb-8">Recupera tu acceso</h2>
+        <p class="text-center fs-13 mb-20">Te enviaremos un enlace seguro a tu correo registrado.</p>
+        <form id="formRecuperar">
+          <div class="field">
+            <label>Correo electrónico</label>
+            <div class="input-wrap"><i class="fa-solid fa-envelope"></i><input type="email" placeholder="tucorreo@ejemplo.com" required></div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Enviar enlace de recuperación</button>
+        </form>
+        <p class="text-center fs-13 mt-20">¿Ya la recordaste? <button class="tab-link" data-tab="login" style="background:none;border:none;color:var(--secondary);font-weight:600;">Inicia sesión</button></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  document.getElementById('authGauge').innerHTML = Shield.gaugeSVG(78, { size:520, stroke:16, showLabel:false });
+  Shield.animateGauges();
+
+  // Tabs
+  const tabs = Shield.qsa('.tab-btn');
+  function activateTab(name){
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    Shield.qsa('.auth-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+name));
+  }
+  tabs.forEach(t => t.addEventListener('click', ()=> activateTab(t.dataset.tab)));
+  Shield.qsa('.tab-link').forEach(t => t.addEventListener('click', ()=> activateTab(t.dataset.tab)));
+  if (location.hash === '#registro') activateTab('registro');
+
+  // Mostrar / ocultar contraseña
+  Shield.qsa('.toggle-pass').forEach(icon=>{
+    icon.addEventListener('click', ()=>{
+      const input = document.getElementById(icon.dataset.target);
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      icon.classList.toggle('fa-eye', showing);
+      icon.classList.toggle('fa-eye-slash', !showing);
+    });
+  });
+
+  // Medidor de fuerza de contraseña
+  const regPass = document.getElementById('regPass');
+  if (regPass){
+    regPass.addEventListener('input', ()=>{
+      const v = regPass.value;
+      let score = 0;
+      if (v.length >= 8) score += 33;
+      if (/[A-Z]/.test(v) && /[0-9]/.test(v)) score += 33;
+      if (/[^A-Za-z0-9]/.test(v)) score += 34;
+      const bar = document.getElementById('passStrength');
+      const hint = document.getElementById('passHint');
+      bar.style.width = score + '%';
+      bar.style.background = score < 34 ? 'var(--danger)' : score < 67 ? 'var(--warning)' : 'var(--success)';
+      hint.textContent = v.length===0 ? 'Fuerza de la contraseña' : score < 34 ? 'Débil — agrega mayúsculas y números' : score < 67 ? 'Media — agrega un símbolo' : 'Fuerte';
+    });
+  }
+
+  // Envío simulado de formularios
+  document.getElementById('formLogin').addEventListener('submit', e=>{
+    e.preventDefault();
+    const email = document.querySelector('#formLogin input[type="email"]').value;
+    // Guardar email en localStorage (en una app real verificarías credenciales)
+    localStorage.setItem('userEmail', email);
+    Shield.toast('success', 'Sesión iniciada', 'Redirigiendo a tu dashboard…');
+    setTimeout(()=> location.href = 'dashboard.html', 900);
+  });
+  document.getElementById('formRegistro').addEventListener('submit', e=>{
+    e.preventDefault();
+    const nombre = document.querySelector('#formRegistro input[type="text"]').value;
+    const email = document.querySelector('#formRegistro input[type="email"]').value;
+    localStorage.setItem('userNombre', nombre);
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userAvatarInitials', Shield.initials(nombre));
+    Shield.toast('success', 'Cuenta creada', 'Bienvenido a SHIELD. Configuremos tu primer diagnóstico.');
+    setTimeout(()=> location.href = 'dashboard.html', 900);
+  });
+  document.getElementById('formRecuperar').addEventListener('submit', e=>{
+    e.preventDefault();
+    Shield.toast('info', 'Enlace enviado', 'Revisa tu bandeja de entrada en los próximos minutos.');
+  });
+</script>
+</body>
+</html>

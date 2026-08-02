@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Administrativo — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .admin-tabs{ display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:22px; overflow-x:auto; }
+  .admin-tab{ padding:12px 18px; font-size:13.5px; color:var(--text-dim); border-bottom:2px solid transparent; white-space:nowrap; }
+  .admin-tab.active{ color:#fff; border-color:var(--secondary); }
+  .admin-panel{ display:none; }
+  .admin-panel.active{ display:block; animation: fade-up .3s var(--ease); }
+  .status-dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+</style>
+</head>
+<body data-page="admin">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div><h1>Panel Administrativo</h1><p class="subtitle">Visión general de la plataforma SHIELD.</p></div>
+        <span class="badge badge-bajo"><i class="fa-solid fa-shield-halved"></i> Acceso de administrador</span>
+      </div>
+
+      <div class="card" id="adminAuthPanel" style="margin-bottom:24px;">
+        <div class="card-header"><div><span class="card-eyebrow">Acceso restringido</span><h3>Inicia sesión como administrador</h3></div></div>
+        <form id="adminLoginForm">
+          <div class="field"><label>Usuario</label><div class="input-wrap"><i class="fa-solid fa-user-shield"></i><input type="text" id="adminUser" placeholder="Jose Borda" required></div></div>
+          <div class="field"><label>Contraseña</label><div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="adminPass" placeholder="undc2026" required></div></div>
+          <div class="flex justify-end"><button type="submit" class="btn btn-primary">Ingresar</button></div>
+        </form>
+        <p class="fs-12 text-faint mt-16">Solo el administrador autorizado puede acceder a este panel.</p>
+      </div>
+
+      <div id="adminContent" style="display:none;">
+      <div class="grid grid-4 mb-20">
+        <div class="card stat-tile"><div class="icon bg-blue"><i class="fa-solid fa-users"></i></div><div class="value">128,430</div><div class="label">Usuarios activos</div><span class="delta up"><i class="fa-solid fa-arrow-up"></i> +2.4% esta semana</span></div>
+        <div class="card stat-tile"><div class="icon bg-red"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="value">312</div><div class="label">Alertas críticas abiertas</div><span class="delta down"><i class="fa-solid fa-arrow-down"></i> -18 hoy</span></div>
+        <div class="card stat-tile"><div class="icon bg-green"><i class="fa-solid fa-flag"></i></div><div class="value">1,204</div><div class="label">Reportes de la comunidad</div><span class="delta up"><i class="fa-solid fa-arrow-up"></i> +54 hoy</span></div>
+        <div class="card stat-tile"><div class="icon bg-orange"><i class="fa-solid fa-crown"></i></div><div class="value">31.8%</div><div class="label">Tasa de conversión Premium</div><span class="delta up"><i class="fa-solid fa-arrow-up"></i> +1.1%</span></div>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="usuarios">Usuarios</button>
+        <button class="admin-tab" data-tab="alertas">Alertas</button>
+        <button class="admin-tab" data-tab="reportes">Reportes / Moderación</button>
+        <button class="admin-tab" data-tab="simulaciones">Simulaciones</button>
+        <button class="admin-tab" data-tab="cursos">Cursos</button>
+      </div>
+
+      <!-- Usuarios -->
+      <div class="admin-panel active" id="admin-usuarios">
+        <div class="card">
+          <div class="card-header"><div><span class="card-eyebrow">Base de usuarios</span><h3>Usuarios recientes</h3></div><input type="text" placeholder="Buscar usuario…" style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:#fff;font-size:12.5px;"></div>
+          <div style="overflow-x:auto;">
+            <table class="table" id="usersTable">
+              <thead><tr><th>Usuario</th><th>Plan</th><th>Score</th><th>Estado</th><th>Registro</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alertas -->
+      <div class="admin-panel" id="admin-alertas">
+        <div class="card">
+          <div class="card-header"><div><span class="card-eyebrow">Monitoreo</span><h3>Alertas del sistema</h3></div></div>
+          <table class="table"><thead><tr><th>Alerta</th><th>Nivel</th><th>Usuarios afectados</th><th>Fecha</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Campaña de SMS falsos "Interbank"</td><td><span class="badge badge-critico">Crítico</span></td><td>2,340</td><td>16 jul 2026</td><td><button class="btn btn-ghost btn-sm">Revisar</button></td></tr>
+              <tr><td>QR falsos en zona Miraflores</td><td><span class="badge badge-alto">Alto</span></td><td>412</td><td>15 jul 2026</td><td><button class="btn btn-ghost btn-sm">Revisar</button></td></tr>
+              <tr><td>App maliciosa "VPN Gratis Ultra"</td><td><span class="badge badge-medio">Medio</span></td><td>980</td><td>14 jul 2026</td><td><button class="btn btn-ghost btn-sm">Revisar</button></td></tr>
+              <tr><td>Actualización de definiciones aplicada</td><td><span class="badge badge-bajo">Bajo</span></td><td>Todos</td><td>13 jul 2026</td><td><button class="btn btn-ghost btn-sm">Revisar</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Reportes -->
+      <div class="admin-panel" id="admin-reportes">
+        <div class="card">
+          <div class="card-header"><div><span class="card-eyebrow">Cola de moderación</span><h3>Reportes de la comunidad</h3></div></div>
+          <table class="table"><thead><tr><th>Reporte</th><th>Autor</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Llamada falsa "Movistar Seguridad"</td><td>Camila R.</td><td><span class="badge badge-medio">En revisión</span></td><td><button class="btn btn-secondary btn-sm">Aprobar</button> <button class="btn btn-ghost btn-sm">Rechazar</button></td></tr>
+              <tr><td>QR falso en grifo Panamericana Sur</td><td>Jorge P.</td><td><span class="badge badge-bajo">Verificado</span></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+              <tr><td>Correo falso SUNAT con adjunto</td><td>Valeria T.</td><td><span class="badge badge-bajo">Verificado</span></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+              <tr><td>Comprador sospechoso en Marketplace</td><td>Diego M.</td><td><span class="badge badge-medio">En revisión</span></td><td><button class="btn btn-secondary btn-sm">Aprobar</button> <button class="btn btn-ghost btn-sm">Rechazar</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Simulaciones -->
+      <div class="admin-panel" id="admin-simulaciones">
+        <div class="card">
+          <div class="card-header"><div><span class="card-eyebrow">Contenido</span><h3>Simulaciones publicadas</h3></div><button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Nueva simulación</button></div>
+          <table class="table"><thead><tr><th>Simulación</th><th>Categoría</th><th>Completadas</th><th>Tasa de éxito</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Phishing por correo</td><td>Phishing</td><td>84,120</td><td>76%</td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr>
+              <tr><td>SUNAT falsa</td><td>Gobierno</td><td>52,310</td><td>68%</td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr>
+              <tr><td>Yape falso</td><td>Financiero</td><td>61,940</td><td>81%</td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cursos -->
+      <div class="admin-panel" id="admin-cursos">
+        <div class="card">
+          <div class="card-header"><div><span class="card-eyebrow">Contenido</span><h3>Cursos y lecciones</h3></div><button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Nuevo curso</button></div>
+          <table class="table"><thead><tr><th>Curso</th><th>Lecciones</th><th>Inscritos</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Reconoce el phishing en segundos</td><td>6</td><td>41,200</td><td><span class="badge badge-bajo">Publicado</span></td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr>
+              <tr><td>Ingeniería social explicada</td><td>8</td><td>28,410</td><td><span class="badge badge-bajo">Publicado</span></td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr>
+              <tr><td>Fraude de suplantación estatal</td><td>5</td><td>—</td><td><span class="badge badge-neutral">Borrador</span></td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'admin', title:'Panel Administrativo', crumbs:['Inicio','Panel Administrativo'] });
+
+  Shield.qsa('.admin-tab').forEach(tab => tab.addEventListener('click', () => {
+    Shield.qsa('.admin-tab').forEach(t => t.classList.remove('active'));
+    Shield.qsa('.admin-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('admin-'+tab.dataset.tab).classList.add('active');
+  }));
+
+  const users = [
+    { name:'Camila Ramírez', init:'CR', plan:'Premium', score:92, status:'Activo', date:'12 mar 2025' },
+    { name:'Diego Medina', init:'DM', plan:'Gratis', score:58, status:'Activo', date:'02 jun 2025' },
+    { name:'Valeria Torres', init:'VT', plan:'Premium', score:81, status:'Activo', date:'19 ene 2025' },
+    { name:'Jorge Paredes', init:'JP', plan:'Gratis', score:34, status:'Suspendido', date:'28 abr 2026' },
+    { name:'Renzo Vidal', init:'RV', plan:'Premium', score:78, status:'Activo', date:'05 feb 2025' },
+  ];
+  document.querySelector('#usersTable tbody').innerHTML = users.map(u => `
+    <tr>
+      <td><div class="flex items-center gap-10"><div class="avatar" style="width:30px;height:30px;font-size:11px;">${u.init}</div>${u.name}</div></td>
+      <td>${u.plan==='Premium' ? '<span class="badge badge-bajo"><i class="fa-solid fa-crown"></i> Premium</span>' : '<span class="badge badge-neutral">Gratis</span>'}</td>
+      <td>${u.score}/100</td>
+      <td><span class="status-dot" style="background:${u.status==='Activo'?'var(--success)':'var(--danger)'}"></span>${u.status}</td>
+      <td>${u.date}</td>
+      <td><button class="btn btn-ghost btn-sm">Gestionar</button></td>
+    </tr>`).join('');
+  const adminInfo = { user: 'Jose Borda', pass: 'undc2026' };
+  const adminAuthPanel = document.getElementById('adminAuthPanel');
+  const adminContent = document.getElementById('adminContent');
+
+  function showAdminContent(){
+    adminAuthPanel.style.display = 'none';
+    adminContent.style.display = 'block';
+  }
+
+  function initAdminAccess(){
+    if (sessionStorage.getItem('adminLoggedIn') === 'true'){
+      showAdminContent();
+    }
+  }
+
+  document.getElementById('adminLoginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const user = document.getElementById('adminUser').value.trim();
+    const pass = document.getElementById('adminPass').value;
+    if (user.toLowerCase() === adminInfo.user.toLowerCase() && pass === adminInfo.pass) {
+      sessionStorage.setItem('adminLoggedIn', 'true');
+      showAdminContent();
+      Shield.toast('success', 'Acceso concedido', 'Bienvenido, ' + adminInfo.user + '.');
+    } else {
+      Shield.toast('danger', 'Acceso denegado', 'Usuario o contraseña incorrectos.');
+    }
+  });
+
+  initAdminAccess();</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro Educativo — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .lesson-thumb{ height:120px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:26px; color:#fff; margin-bottom:14px; position:relative; overflow:hidden; }
+  .lesson-thumb .type-tag{ position:absolute; top:10px; left:10px; background:rgba(0,0,0,.4); backdrop-filter:blur(6px); padding:4px 10px; border-radius:999px; font-size:10.5px; }
+  .lesson-thumb .duration-tag{ position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,.5); padding:3px 9px; border-radius:8px; font-size:10.5px; }
+</style>
+</head>
+<body data-page="cursos">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div><h1>Centro Educativo</h1><p class="subtitle">Cursos, videos y artículos para blindar tu criterio digital.</p></div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="header-search" style="max-width:320px;">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="courseSearch" placeholder="Buscar lecciones…">
+        </div>
+        <button class="chip active" data-filter="todos">Todos</button>
+        <button class="chip" data-filter="curso">Cursos</button>
+        <button class="chip" data-filter="video">Videos</button>
+        <button class="chip" data-filter="articulo">Artículos</button>
+      </div>
+
+      <div class="grid grid-3" id="lessonsGrid"></div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'cursos', title:'Centro Educativo', crumbs:['Inicio','Centro Educativo'] });
+
+  const lessons = [
+    { type:'curso', icon:'fa-envelope-open-text', color:'bg-red', title:'Reconoce el phishing en segundos', desc:'Aprende las 5 señales que delatan un correo falso.', dur:'6 lecciones', level:'Básico' },
+    { type:'video', icon:'fa-circle-play', color:'bg-blue', title:'Cómo protegen tu banco (y tú)', desc:'Entrevista con un especialista en fraude bancario.', dur:'8 min', level:'Básico' },
+    { type:'articulo', icon:'fa-file-lines', color:'bg-green', title:'Contraseñas: la guía definitiva', desc:'Gestores de contraseñas y autenticación en dos pasos.', dur:'5 min lectura', level:'Intermedio' },
+    { type:'curso', icon:'fa-user-secret', color:'bg-orange', title:'Ingeniería social explicada', desc:'Por qué caemos en manipulación emocional y cómo evitarlo.', dur:'8 lecciones', level:'Intermedio' },
+    { type:'video', icon:'fa-circle-play', color:'bg-blue', title:'QR falsos: la nueva estafa', desc:'Casos reales de códigos QR clonados en restaurantes.', dur:'5 min', level:'Básico' },
+    { type:'articulo', icon:'fa-file-lines', color:'bg-green', title:'Configura tu privacidad en redes', desc:'Paso a paso para reducir tu huella digital pública.', dur:'7 min lectura', level:'Básico' },
+    { type:'curso', icon:'fa-landmark', color:'bg-red', title:'Fraude de suplantación estatal', desc:'Cómo identificar comunicaciones falsas de entidades públicas.', dur:'5 lecciones', level:'Avanzado' },
+    { type:'video', icon:'fa-circle-play', color:'bg-blue', title:'Anatomía de una llamada falsa', desc:'Grabación real (actuada) de un intento de vishing.', dur:'10 min', level:'Intermedio' },
+    { type:'articulo', icon:'fa-file-lines', color:'bg-green', title:'Qué hacer si ya diste tus datos', desc:'Guía de respuesta inmediata ante un posible fraude.', dur:'4 min lectura', level:'Básico' },
+  ];
+
+  const grid = document.getElementById('lessonsGrid');
+  function render(){
+    const activeFilter = Shield.qs('.chip.active').dataset.filter;
+    const term = document.getElementById('courseSearch').value.toLowerCase();
+    const list = lessons.filter(l =>
+      (activeFilter === 'todos' || l.type === activeFilter) &&
+      (l.title.toLowerCase().includes(term) || l.desc.toLowerCase().includes(term))
+    );
+    const typeLabel = { curso:'Curso', video:'Video', articulo:'Artículo' };
+    grid.innerHTML = list.length ? list.map(l => `
+      <div class="card" data-reveal>
+        <div class="lesson-thumb ${l.color}">
+          <span class="type-tag">${typeLabel[l.type]}</span>
+          <span class="duration-tag">${l.dur}</span>
+          <i class="fa-solid ${l.icon}"></i>
+        </div>
+        <span class="badge badge-neutral">${l.level}</span>
+        <h3 class="fs-14 mt-8">${l.title}</h3>
+        <p class="fs-13 mt-8 mb-16">${l.desc}</p>
+        <button class="btn btn-secondary btn-block">Comenzar <i class="fa-solid fa-arrow-right"></i></button>
+      </div>`).join('') : `<div class="card text-center" style="grid-column:1/-1;padding:50px;"><i class="fa-solid fa-magnifying-glass" style="font-size:24px;color:var(--text-faint);"></i><p class="mt-12">No encontramos lecciones con ese criterio.</p></div>`;
+    Shield.wireReveal();
+  }
+
+  Shield.qsa('.chip').forEach(chip => chip.addEventListener('click', () => {
+    Shield.qsa('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    render();
+  }));
+  document.getElementById('courseSearch').addEventListener('input', render);
+  render();
+</script>
+</body>
+</html>

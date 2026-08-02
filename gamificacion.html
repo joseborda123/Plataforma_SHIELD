@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamificación — SHIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  .badge-tile{ display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; padding:20px 12px; }
+  .badge-tile .icon-circle{ width:58px; height:58px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; }
+  .badge-tile.locked .icon-circle{ background:rgba(148,163,184,.1); color:var(--text-faint); }
+  .rank-row{ display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--border-soft); }
+  .rank-row:last-child{ border-bottom:none; }
+  .rank-row .pos{ width:26px; text-align:center; font-family:var(--font-display); font-weight:700; color:var(--text-faint); }
+  .rank-row.me{ background:rgba(37,99,235,.08); border-radius:12px; padding:12px; margin:0 -12px; border-bottom:none; }
+  .mission-row{ display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-soft); }
+  .mission-row:last-child{ border-bottom:none; }
+</style>
+</head>
+<body data-page="gamificacion">
+
+<div class="app-loader"><div class="loader-ring"></div></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar-mount"></aside>
+  <div>
+    <header class="header" id="header-mount"></header>
+
+    <main class="main">
+      <div class="page-title-row">
+        <div><h1>Gamificación</h1><p class="subtitle">Cada buen hábito de seguridad te acerca al siguiente rango.</p></div>
+      </div>
+
+      <div class="card mb-20" style="padding:28px;">
+        <div class="flex items-center gap-20" style="flex-wrap:wrap;">
+          <div class="stat-tile icon bg-blue" style="width:64px;height:64px;font-size:24px;border-radius:18px;"><i class="fa-solid fa-shield-halved"></i></div>
+          <div style="flex:1;min-width:220px;">
+            <div class="flex items-center gap-10"><h2 style="font-size:20px;">Nivel 12 — Guardián Digital</h2><span class="badge badge-bajo">Top 8%</span></div>
+            <div class="progress-row mt-8"><span>3,260 XP</span><span>Próximo nivel: 4,000 XP</span></div>
+            <div class="progress"><span id="xpBar" style="width:0%"></span></div>
+          </div>
+          <div class="text-center">
+            <div class="fs-12 text-faint">Racha activa</div>
+            <div style="font-family:var(--font-display);font-size:26px;"><i class="fa-solid fa-fire text-warning"></i> 18</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-main">
+        <div class="flex flex-col gap-20">
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Insignias</span><h3>Tu colección</h3></div></div>
+            <div class="grid grid-4" style="gap:14px;">
+              <div class="badge-tile"><div class="icon-circle bg-blue"><i class="fa-solid fa-shield-halved"></i></div><b class="fs-12">Primer escudo</b></div>
+              <div class="badge-tile"><div class="icon-circle bg-green"><i class="fa-solid fa-eye"></i></div><b class="fs-12">Ojo de águila</b></div>
+              <div class="badge-tile"><div class="icon-circle bg-orange"><i class="fa-solid fa-fire"></i></div><b class="fs-12">Racha de 15 días</b></div>
+              <div class="badge-tile"><div class="icon-circle bg-red"><i class="fa-solid fa-envelope-open-text"></i></div><b class="fs-12">Cazador de phishing</b></div>
+              <div class="badge-tile locked"><div class="icon-circle"><i class="fa-solid fa-lock"></i></div><b class="fs-12">Maestro SUNAT</b></div>
+              <div class="badge-tile locked"><div class="icon-circle"><i class="fa-solid fa-lock"></i></div><b class="fs-12">100 simulaciones</b></div>
+              <div class="badge-tile locked"><div class="icon-circle"><i class="fa-solid fa-lock"></i></div><b class="fs-12">Score perfecto</b></div>
+              <div class="badge-tile locked"><div class="icon-circle"><i class="fa-solid fa-lock"></i></div><b class="fs-12">Mentor comunitario</b></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Misiones activas</span><h3>Esta semana</h3></div></div>
+            <div class="mission-row">
+              <div class="stat-tile icon bg-blue" style="width:38px;height:38px;font-size:14px;"><i class="fa-solid fa-user-secret"></i></div>
+              <div style="flex:1;"><b class="fs-13">Completa 3 simulaciones</b><div class="progress thin mt-8"><span style="width:66%"></span></div></div>
+              <span class="fs-12 text-faint">2/3</span>
+            </div>
+            <div class="mission-row">
+              <div class="stat-tile icon bg-green" style="width:38px;height:38px;font-size:14px;"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+              <div style="flex:1;"><b class="fs-13">Ejecuta un diagnóstico</b><div class="progress thin mt-8"><span style="width:100%"></span></div></div>
+              <span class="fs-12 text-success"><i class="fa-solid fa-check"></i></span>
+            </div>
+            <div class="mission-row">
+              <div class="stat-tile icon bg-orange" style="width:38px;height:38px;font-size:14px;"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div style="flex:1;"><b class="fs-13">Termina 1 curso educativo</b><div class="progress thin mt-8"><span style="width:20%"></span></div></div>
+              <span class="fs-12 text-faint">1/5 lecciones</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-20">
+          <div class="card">
+            <div class="card-header"><div><span class="card-eyebrow">Ranking</span><h3>Comunidad SHIELD</h3></div></div>
+            <div id="rankingList"></div>
+          </div>
+          <div class="card glass text-center" style="border-color:rgba(245,158,11,.3)">
+            <i class="fa-solid fa-crown" style="font-size:22px;color:var(--warning);"></i>
+            <h3 class="mt-12">Siguiente rango: Centinela</h3>
+            <p class="fs-13 mt-8">Te faltan 740 XP. Completa 2 simulaciones más para alcanzarlo.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="notif-panel-mount"></div>
+<script src="app.js"></script>
+<script>
+  Shield.initLayout({ active:'gamificacion', title:'Gamificación', crumbs:['Inicio','Gamificación'] });
+  setTimeout(()=> document.getElementById('xpBar').style.width = '81.5%', 200);
+
+  const ranking = [
+    { pos:1, name:'Camila R.', xp:5820, you:false },
+    { pos:2, name:'Diego M.', xp:5210, you:false },
+    { pos:3, name:'Valeria T.', xp:4870, you:false },
+    { pos:8, name:'Renzo Vidal (tú)', xp:3260, you:true },
+    { pos:9, name:'Jorge P.', xp:3120, you:false },
+  ];
+  document.getElementById('rankingList').innerHTML = ranking.map(r => `
+    <div class="rank-row ${r.you?'me':''}">
+      <div class="pos">${r.pos}</div>
+      <div class="avatar" style="width:32px;height:32px;font-size:12px;">${r.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+      <div style="flex:1;"><b class="fs-13">${r.name}</b></div>
+      <span class="fs-12 text-faint">${r.xp.toLocaleString('es-PE')} XP</span>
+    </div>`).join('');
+</script>
+</body>
+</html>

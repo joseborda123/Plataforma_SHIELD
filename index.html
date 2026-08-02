@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHIELD — Protegiendo tu vida digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Estilos exclusivos de la landing (no forman parte del shell de la app) */
+  body{ overflow-x:hidden; }
+  .lp-nav{
+    position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+    padding:20px 48px; backdrop-filter: blur(14px); background:rgba(11,17,32,.55); border-bottom:1px solid var(--border-soft);
+  }
+  .lp-nav .brand{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:18px; }
+  .lp-nav .brand .mark{ width:34px; height:34px; border-radius:10px; background:conic-gradient(from 220deg,var(--secondary),var(--success),var(--secondary)); display:flex; align-items:center; justify-content:center; }
+  .lp-nav .brand .mark i{ color:#0B1120; font-size:14px; }
+  .lp-nav .links{ display:flex; gap:30px; font-size:13.5px; color:var(--text-dim); }
+  .lp-nav .links a:hover{ color:#fff; }
+  .lp-nav .cta{ display:flex; gap:12px; }
+
+  .hero{ padding:180px 48px 100px; display:grid; grid-template-columns:1.1fr .9fr; gap:60px; max-width:1400px; margin:0 auto; align-items:center; }
+  .hero-eyebrow{ display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:999px; border:1px solid var(--border); background:var(--card-glass); font-size:12px; color:var(--secondary); margin-bottom:22px; }
+  .hero h1{ font-size:52px; line-height:1.08; margin-bottom:20px; }
+  .hero h1 span{ background:linear-gradient(135deg,var(--secondary),var(--success)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p.lead{ font-size:16px; color:var(--text-dim); max-width:520px; line-height:1.7; margin-bottom:30px; }
+  .hero-cta{ display:flex; gap:14px; margin-bottom:38px; }
+  .hero-trust{ display:flex; gap:28px; color:var(--text-faint); font-size:12.5px; }
+  .hero-trust b{ color:#fff; display:block; font-family:var(--font-display); font-size:20px; }
+
+  .hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
+  .hero-visual .halo-wrap{ position:relative; width:380px; height:380px; }
+  .float-card{
+    position:absolute; background:var(--card-glass); border:1px solid var(--border); backdrop-filter: blur(16px);
+    border-radius:16px; padding:14px 16px; box-shadow: var(--shadow-md); animation: floaty 5s ease-in-out infinite;
+  }
+  .float-card.c1{ top:-10px; left:-60px; animation-delay:.2s; }
+  .float-card.c2{ bottom:10px; right:-70px; animation-delay:1s; }
+  .float-card.c3{ bottom:-30px; left:10px; animation-delay:1.6s; }
+  @keyframes floaty{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-12px);} }
+
+  .lp-section{ padding:90px 48px; max-width:1400px; margin:0 auto; }
+  .lp-section-head{ text-align:center; max-width:640px; margin:0 auto 50px; }
+  .lp-section-head .eyebrow{ color:var(--secondary); font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:600; }
+  .lp-section-head h2{ font-size:32px; margin-top:10px; }
+  .lp-section-head p{ margin-top:12px; }
+
+  .feature-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .feature-card{ padding:26px; }
+  .feature-card .icn{ width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff; margin-bottom:16px; }
+  .feature-card h3{ font-size:15.5px; margin-bottom:8px; }
+  .feature-card p{ font-size:13px; line-height:1.6; }
+
+  .plans-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:820px; margin:0 auto; }
+  .plan-card{ padding:32px; position:relative; }
+  .plan-card.featured{ border:1px solid rgba(37,99,235,.4); box-shadow: var(--shadow-glow-blue); }
+  .plan-card .tag{ position:absolute; top:-12px; right:24px; background:linear-gradient(135deg,var(--secondary),var(--primary)); padding:5px 14px; border-radius:999px; font-size:11px; font-weight:700; }
+  .plan-card .price{ font-family:var(--font-display); font-size:38px; margin:14px 0 4px; }
+  .plan-card ul{ margin:22px 0; display:flex; flex-direction:column; gap:12px; }
+  .plan-card li{ display:flex; gap:10px; font-size:13.5px; color:var(--text-dim); }
+  .plan-card li i{ color:var(--success); margin-top:2px; }
+
+  .lp-footer{ padding:40px 48px; border-top:1px solid var(--border-soft); text-align:center; color:var(--text-faint); font-size:12.5px; }
+
+  @media (max-width:1024px){
+    .hero{ grid-template-columns:1fr; padding-top:140px; }
+    .hero-visual{ order:-1; }
+    .feature-grid{ grid-template-columns:repeat(2,1fr); }
+    .plans-grid{ grid-template-columns:1fr; }
+    .lp-nav .links{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="lp-nav">
+  <div class="brand"><div class="mark"><i class="fa-solid fa-shield-halved"></i></div> SHIELD</div>
+  <div class="links">
+    <a href="#producto">Producto</a>
+    <a href="#simulaciones">Simulaciones</a>
+    <a href="#planes">Planes</a>
+    <a href="#comunidad">Comunidad</a>
+  </div>
+  <div class="cta">
+    <a href="login.html" class="btn btn-ghost btn-sm">Iniciar sesión</a>
+    <a href="login.html#registro" class="btn btn-primary btn-sm">Crear cuenta</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="hero-eyebrow"><i class="fa-solid fa-sparkles"></i> Ciberseguridad preventiva para personas reales</div>
+    <h1>Detecta la estafa <span>antes</span> de que te alcance.</h1>
+    <p class="lead">SHIELD no es un antivirus: es tu entrenador personal de ciberseguridad. Diagnostica tu dispositivo, te enfrenta a simulaciones reales de phishing e ingeniería social, y convierte la prevención en un hábito con gamificación.</p>
+    <div class="hero-cta">
+      <a href="login.html#registro" class="btn btn-primary">Comenzar gratis <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="dashboard.html" class="btn btn-secondary">Ver demo del dashboard</a>
+    </div>
+    <div class="hero-trust">
+      <div><b>128K+</b> dispositivos protegidos</div>
+      <div><b>4.9M</b> estafas simuladas</div>
+      <div><b>98%</b> satisfacción</div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="halo-wrap">
+      <div id="heroGauge"></div>
+      <div class="float-card c1"><i class="fa-solid fa-triangle-exclamation text-warning"></i> <b class="fs-13">SMS sospechoso</b><p class="fs-12">Bloqueado hace 2 min</p></div>
+      <div class="float-card c2"><i class="fa-solid fa-bolt text-success"></i> <b class="fs-13">+120 XP</b><p class="fs-12">Simulación superada</p></div>
+      <div class="float-card c3"><i class="fa-solid fa-shield-halved text-success"></i> <b class="fs-13">Dispositivo protegido</b><p class="fs-12">Último análisis: hoy</p></div>
+    </div>
+  </div>
+</header>
+
+<section class="lp-section" id="producto">
+  <div class="lp-section-head">
+    <div class="eyebrow">Ecosistema completo</div>
+    <h2>Prevención, educación y comunidad en un solo lugar</h2>
+    <p>Todo lo que necesitas para blindar tu vida digital, sin ser un experto en tecnología.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="card feature-card">
+      <div class="icn bg-blue"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+      <h3>Diagnóstico inteligente</h3>
+      <p>Analiza permisos, apps sospechosas y configuración insegura en segundos.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-orange"><i class="fa-solid fa-user-secret"></i></div>
+      <h3>Simulaciones reales</h3>
+      <p>Phishing, SMS, Yape y SUNAT falsos: aprende reconociendo el engaño sin riesgo.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-green"><i class="fa-solid fa-trophy"></i></div>
+      <h3>Gamificación</h3>
+      <p>Sube de nivel, gana insignias y compite en el ranking de protección.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-red"><i class="fa-solid fa-people-group"></i></div>
+      <h3>Comunidad activa</h3>
+      <p>Reporta fraudes y entérate de estafas verificadas antes que te lleguen a ti.</p>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="planes">
+  <div class="lp-section-head">
+    <div class="eyebrow">Planes</div>
+    <h2>Empieza gratis. Protégete a fondo cuando quieras.</h2>
+  </div>
+  <div class="plans-grid">
+    <div class="card plan-card">
+      <span class="badge badge-neutral">Gratis</span>
+      <div class="price">S/ 0<span class="fs-14 text-faint">/mes</span></div>
+      <p class="fs-13">Lo esencial para empezar a protegerte.</p>
+      <ul>
+        <li><i class="fa-solid fa-circle-check"></i> Diagnóstico básico mensual</li>
+        <li><i class="fa-solid fa-circle-check"></i> 3 simulaciones por semana</li>
+        <li><i class="fa-solid fa-circle-check"></i> Centro educativo limitado</li>
+      </ul>
+      <a href="login.html#registro" class="btn btn-secondary btn-block">Crear cuenta gratis</a>
+    </div>
+    <div class="card plan-card featured">
+      <span class="tag">Recomendado</span>
+      <span class="badge badge-bajo">Premium</span>
+      <div class="price">S/ 19.90<span class="fs-14 text-faint">/mes</span></div>
+      <p class="fs-13">Protección completa y prioritaria.</p>
+      <ul>
+        <li><i class="fa-solid fa-circle-check"></i> Diagnóstico ilimitado en tiempo real</li>
+        <li><i class="fa-solid fa-circle-check"></i> Simulaciones ilimitadas + nuevas cada semana</li>
+        <li><i class="fa-solid fa-circle-check"></i> Soporte Premium 24/7</li>
+        <li><i class="fa-solid fa-circle-check"></i> Insignias y rangos exclusivos</li>
+      </ul>
+      <a href="premium.html" class="btn btn-primary btn-block">Ver plan Premium</a>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="simulaciones">
+  <div class="lp-section-head">
+    <div class="eyebrow">Simulaciones</div>
+    <h2>Entrena tu mente contra las estafas digitales</h2>
+    <p>Resuelve ataques reales y aprende a identificar phishing por correo, SMS, WhatsApp y llamadas falsas.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="card feature-card">
+      <div class="icn bg-red"><i class="fa-solid fa-envelope-open-text"></i></div>
+      <h3>Phishing de correo</h3>
+      <p>Detecta correos falsos que intentan robar contraseñas o datos bancarios.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-orange"><i class="fa-solid fa-comment-sms"></i></div>
+      <h3>SMS falso</h3>
+      <p>Aprende a reconocer mensajes que prometen premios o piden información personal.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-blue"><i class="fa-solid fa-phone"></i></div>
+      <h3>Llamada falsa</h3>
+      <p>Practica identificar voces y urgencias diseñadas para engañarte.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-green"><i class="fa-solid fa-qrcode"></i></div>
+      <h3>QR y pagos falsos</h3>
+      <p>Reconoce códigos maliciosos y transacciones fraudulentas antes de clicar.</p>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="comunidad">
+  <div class="lp-section-head">
+    <div class="eyebrow">Comunidad</div>
+    <h2>Comparte alertas y protege a otros</h2>
+    <p>Únete a una red que reporta fraudes, comparte experiencias y recibe consejos verificados.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="card feature-card">
+      <div class="icn bg-blue"><i class="fa-solid fa-people-group"></i></div>
+      <h3>Reportes verificados</h3>
+      <p>Accede a fraudes confirmados por la comunidad antes de recibirlos.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-green"><i class="fa-solid fa-circle-check"></i></div>
+      <h3>Consejos prácticos</h3>
+      <p>Obtén recomendaciones reales para proteger tu correo, WhatsApp y pagos.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-orange"><i class="fa-solid fa-comments"></i></div>
+      <h3>Foros de seguridad</h3>
+      <p>Comparte dudas y aprende de otros usuarios que ya pasaron por el mismo riesgo.</p>
+    </div>
+    <div class="card feature-card">
+      <div class="icn bg-red"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3>Alerta temprana</h3>
+      <p>Recibe notificaciones sobre nuevas estafas antes de que se propaguen.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="lp-footer">
+  © 2026 SHIELD — Protegiendo tu vida digital. Todos los derechos reservados.
+</footer>
+
+<script src="app.js"></script>
+<script>
+  document.getElementById('heroGauge').innerHTML = Shield.gaugeSVG(78, { size: 380, stroke:14, sub:'Tu protección' });
+  Shield.animateGauges();
+</script>
+</body>
+</html>
